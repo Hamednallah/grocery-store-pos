@@ -1,0 +1,419 @@
+#!/usr/bin/env bash
+set -e
+OUTDIR="./grocery_pos_desktop_package"
+ZIPNAME="grocery_pos_desktop_package.zip"
+
+mkdir -p "$OUTDIR"
+mkdir -p "$OUTDIR/scaffold/src/main/java/com/example/pos"
+mkdir -p "$OUTDIR/scaffold/src/main/resources"
+mkdir -p "$OUTDIR/migrations"
+mkdir -p "$OUTDIR/seeds"
+mkdir -p "$OUTDIR/packaging"
+
+cat > "$OUTDIR/Desktop_POS_Full_Spec.md" <<'EOF'
+# Grocery Store Desktop POS — Full Production-ready System Specification (Java)
+
+**Platform:** Desktop (Windows/Linux)  
+**Primary language / stack:** Java (OpenJDK 17 or 21) + JavaFX for UI  
+**Database:** SQLite (local file)  
+**Packaging:** jpackage / platform-native installers (.msi, .deb/.rpm)  
+**Printing:** ESC/POS compatible thermal printers (USB/Serial) via native drivers or dedicated ESC/POS Java library  
+**Locale:** Arabic (default, RTL) + English (toggle)  
+**Currency:** SDG
+
+---
+
+## 1. Executive summary
+This document specifies a local-first desktop Point-of-Sale (POS) application for a single grocery store, optimized for older machines (Core i3, 4GB RAM). The app is a native desktop client built with Java and JavaFX, using a lightweight SQLite database stored locally. No cloud, no remote servers. The system supports two user roles: **Cashier** and **Admin/Manager**. Key features: fast responsive UI, barcode scanning and printing, cashier shift workflows, inventory with expiry and low-stock alerts, purchase orders, expenses (recurring & immediate), full reporting (P&L, X/Z), backups and restore, and packaging for Windows and Linux.
+
+Goals:
+- Fast, low-memory footprint, robust on old hardware.
+- Beautiful, modern UI (JavaFX with CSS styling, icons, animations kept minimal for performance).
+- Offline-first, self-contained single binary/installer.
+- TDD approach with unit tests and UI tests.
+
+---
+
+## 2. Non-functional constraints & assumptions
+- Target hardware: Core i3 (5th gen), 4 GB RAM, spinning HDD possible. Expect single-terminal or a few standalone machines (no server).
+- No cloud. All data stored in local SQLite file (`data/pos.db`).
+- Single-tenant (one store). Optional future sync via manual export/import.
+- Timezone and locale configured per store; default to Arabic locale and SDG currency.
+- App must run headless for background tasks; UI and CLI provided for admin tasks.
+
+---
+
+## 3. Users & roles
+- **Admin/Manager**
+  - Full access: settings, products, suppliers, purchase orders, expenses, reports, backup/restore, user management, store identity (logo/name/phone/address).
+- **Cashier**
+  - Can perform sales, returns, start/pause/end shifts, create immediate expenses (if permitted), view alerts, search products, use scanner, print receipts.
+
+Authentication:
+- Username + password stored as salted bcrypt hashes (use `BCrypt`).
+- Admins can reset passwords but cannot view plaintext.
+- Optional PIN quick-login for cashiers (local, hashed).
+
+---
+
+## 4. Core features
+
+### 4.1 Sales / Checkout
+- Add products by barcode scan or search (name/SKU).
+- Quantity, per-line fixed discount, order-level discount (enter number or percent -> stored as number).
+- Payment methods: Cash, Bank Transfer (cashier records optional transaction/reference number), Credit/Debt (customer account).
+- Partial payments allowed (mark as paid partial; remaining recorded as due).
+- Receipt printing: ESC/POS 88mm thermal receipt and PDF fallback (for printers without ESC/POS).
+- Sales recorded in `sales` and linked `sale_items`. Inventory reduced immediately.
+
+### 4.2 Inventory & Products
+- Product fields: SKU, barcode, generated barcode option, name (ar/en), category, unit, supplier, purchase_price_history, sell_price, qty, expiry_date, expiry_warning_offset (days/months), low_stock_threshold, description, created_by, updated_by, created_at, updated_at.
+- Barcode generation (Code128) and label print (40×25 or 88mm roll) support.
+- Low stock alerts and expiry alerts with configurable offsets.
+- Auto Purchase Order: selling causing stock < 0 auto-creates a draft PO with needed qty and last purchase price; admin notified to confirm/edit.
+
+### 4.3 Purchase Orders
+- Manual PO creation by Admin (and by cashier with permission).
+- Quick-add product dialog (minimal fields: name, category, unit, purchase price, optional barcode) available only inside Purchase Order workflow when product absent.
+- PO lifecycle: Draft -> Ordered -> Received. When received, quantities added to inventory and purchase_price_history recorded, updating weighted-average cost.
+
+### 4.4 Expenses
+- Support for **Immediate** expenses (one-time) and **Recurring** expenses.
+- Admin creates recurring; Cashiers can create immediate.
+- Fields: title, category, amount, tax (optional), payee, payment_method, reference_number, attachment (image/PDF, max 10MB), due_date, paid_date, status, is_recurring, recurrence_interval (daily/weekly/monthly/year), alert_offset (days/months), created_by, notes.
+- Recurring occurrences auto-generated via background scheduler (configurable) and can also be generated on-demand.
+- Expense occurrences linked to shifts if paid by cash and configured to affect drawer.
+
+### 4.5 Shifts & Cash Drawer
+- Cashier shift lifecycle: Start (enter starting cash), Pause, Resume, End (enter actual cash, system shows expected cash and variance).
+- All sales and cash expenses within shift attributed to shift.
+- End-of-shift report generated (X/Z style) with variance noted in audit_logs.
+
+### 4.6 Alerts & Notifications
+- Bell icon with unread count and colored alert types (configurable colors).
+  - Red: Expiry / Due payments
+  - Orange: Low stock
+  - Blue: Info (backups, system)
+  - Green: Success / confirmations
+  - Purple: Expense due
+- Clicking alert opens compact modal with action (mark paid, open PO, edit price).
+
+### 4.7 Reports
+- Daily sales, X/Z reports, Shift reports, Inventory valuation (weighted average), Profit & Loss (revenue minus cost and expenses), Customer sales, Expenses report (by category and range).
+- Export to CSV and PDF (embedded PDF generation via PDFBox or iText open-source).
+- Reports date range selector, cash vs accrual option for P&L (user chooses whether to count expenses when paid or when due).
+
+### 4.8 Backups & Restore
+- Local backup: `data/pos_backup_YYYYMMDD.db` created via safe SQLite copy (ensuring DB is in consistent state).
+- Scheduled backups (daily default) with retention policy (default keep 3 days).
+- Restore via admin UI with warnings; automatic pre-restore backup created.
+- Optional encrypted local backups (password-based AES) as advanced option.
+
+### 4.9 Customers & Credit
+- Customer profile: name, phone, ID number, optional photo, balance, history of purchases and debts.
+- Customer credit accounts with due dates; alerts generated for due accounts.
+
+### 4.10 Printing & Peripherals
+- Thermal printers (ESC/POS) via platform native print or via library (e.g., escpos-coffee) and fallback to PDF.
+- Barcode scanners act as HID keyboard (scan into focused input).
+- Cash drawer triggered via ESC/POS command if printer supports, else via dedicated COM/USB interface.
+- Printer settings saved in app settings (discover/choose once).
+
+---
+
+## 5. Data model (SQLite tables) — simplified schema
+- users, shifts, categories, suppliers, products, inventory_movements, customers, sales, sale_items, payments, returns, purchase_orders, purchase_items, alerts, backups, audit_logs, expenses, expense_occurrences.
+
+(Full ERD provided in Appendix files in package.)
+
+---
+
+## 6. Technical architecture & stack details
+- Java 17 or 21 (LTS recommended). Use modular JAR or fat JAR for distribution.
+- Build tool: Gradle (Kotlin DSL recommended) for ease of jpackage integration.
+- UI: JavaFX 17+ (OpenJFX) with CSS theming, FontAwesome or Material icons, and responsive layout (designed for 1366×768 and higher).
+- DB: SQLite via Xerial `sqlite-jdbc`.
+- Migrations: Simple SQL migration runner embedded (or use Flyway if preferred).
+- Tests: JUnit 5 for unit tests; TestFX for UI tests; Mockito for service mocking.
+- PDF: Apache PDFBox or OpenPDF (AGPL/LGPL -- check license), prefer PDFBox.
+- Printing: Use `javax.print` where possible; for ESC/POS use a dedicated library or write to serial port via `jSerialComm`.
+- Logging: SLF4J + Logback (rolling files).
+- Internationalization: ResourceBundle properties files for `ar` and `en` locales. UI supports RTL via JavaFX node orientation.
+- Security: BCrypt for password hashing; use KeyStore for storing optional encryption keys for backups.
+
+---
+
+## 7. Installer & distribution
+- Use `jpackage` to build native installers for Windows (.msi) and Linux (.deb/.rpm).
+- Distribute with bundled JRE (create runtime image) to avoid JDK/JRE install issues.
+- Provide auto-update option in future (manual update recommended for MVP).
+
+---
+
+## 8. Backup, recovery & maintenance
+- Store backups in `backups/` directory with metadata JSON.
+- Provide export/import for products/customers in CSV.
+- Provide a diagnostic export (logs + DB) for troubleshooting.
+
+---
+
+## 9. Testing strategy & QA
+- Unit tests for services and business rules (inventory, sales, PO logic).
+- Integration tests for DB operations (use in-memory SQLite or temporary file DB).
+- UI tests (TestFX) for checkout flows, printing preview, shift end flows.
+- Manual acceptance tests for hardware interactions (printer & drawer).
+- Maintain >80% coverage on core domain logic.
+
+---
+
+## 10. Security & data privacy
+- Data stored locally; advise regular backups.
+- Optionally encrypt backups with user-provided password.
+- Follow secure coding practices: input validation, parameterized DB queries (use prepared statements), audit logging for sensitive actions.
+
+---
+
+## 11. Performance tuning (for old PCs)
+- Limit JavaFX heavy animations; prefer simple transitions.
+- Use pagination & lazy loading for large lists.
+- Keep images (customer photos, logos) resized and cached.
+- SQLite PRAGMA tuned: `journal_mode=WAL`, `synchronous=NORMAL`, `cache_size=2000` (adjust for performance).
+- Limit background job frequency; run expensive reports via background threads with progress bars.
+
+---
+
+## 12. Developer deliverables (in this package)
+- Full specification (this file).
+- Developer prompt for LLM (Java desktop oriented).
+- Gradle build files and a starter project scaffold (skeleton main class, module layout).
+- Migration SQL templates and seed data (CSV).
+- Packaging scripts (`jpackage` example).
+- README with setup & build instructions.
+- Claude/LLM incremental prompts (if desired).
+
+---
+
+## 13. Next steps (recommended)
+1. Approve stack and spec.  
+2. Generate UI mockups (Arabic RTL + English) and component library (JavaFX CSS).  
+3. Implement backend services (TDD): auth, products, inventory, sales, shifts, POs, expenses, reports.  
+4. Implement UI screens in parallel with TestFX tests.  
+5. Hardware integration and acceptance tests.  
+6. Packaging, installer QA, and field testing in target hardware.
+
+---
+
+## Appendix
+- ER diagram, API-like service method list, sample SQL migrations, and example receipt layout included in the downloadable package.
+
+*End of spec.*
+EOF
+
+cat > "$OUTDIR/Java_Developer_Prompt.md" <<'EOF'
+# Java Desktop POS — Developer Prompt (System & User)
+
+Use this prompt with a capable LLM (Claude, Llama2, Mistral or similar) to generate a Java desktop POS project.
+
+## System prompt
+You are an expert senior Java full-stack engineer and technical lead. You will generate a complete, production-ready desktop POS application using Java + JavaFX + SQLite following Test-Driven Development (TDD). For each feature:
+- Produce failing unit tests (JUnit 5), then implement code to pass tests.
+- Provide clear incremental commits with commit messages.
+- Deliver build files (Gradle Kotlin DSL recommended), migration SQLs, sample seed data, and packaging scripts using `jpackage`.
+- Keep memory use low; optimize UI performance for Core i3 + 4GB RAM.
+- Provide README, run instructions, and demo credentials.
+- Use BCrypt for password hashing.
+- Use prepared statements for DB access and keep DB access layer well-tested.
+- Provide TestFX UI tests for core flows (checkout, shift end, PO confirm).
+- Produce a final zip of the project that can be built locally.
+
+## User prompt (project spec)
+Build a Grocery Store Desktop POS (Java) with these explicit requirements:
+- Java + JavaFX UI, SQLite local DB, no cloud.
+- Roles: Admin & Cashier, username/password (bcrypt), admin reset only.
+- Sales checkout: barcode scanning, product search, quantity, per-item discount (fixed), order discount (number stored), payments: cash, bank transfer (store optional tx ref), customer credit.
+- Inventory: expiry_date, expiry_warning_offset (days/months), low_stock_threshold, auto PO creation when stock goes negative, weighted-average inventory valuation.
+- Purchase Orders: manual create/confirm/receive; quick-add product dialog available only inside PO workflow.
+- Expenses: immediate (cashier allowed) and recurring (admin only). Recurrence simple intervals, auto-generated occurrences, attachments (image/pdf, 10MB max), expense reports and P&L integration.
+- Shifts: start/pause/resume/end; starting cash, end reconciliation with variance.
+- Alerts: bell icon, colored alerts per type, actionable modals.
+- Reports: X/Z, shift, inventory valuation, profit & loss, expenses by category, export CSV/PDF.
+- Printing: ESC/POS 88mm thermal receipts and PDF fallback.
+- Backups: local DB copy scheduled daily, retention 3 days, restore with pre-restore backup.
+- Packaging: jpackage installers for Windows and Linux, include a bundled JRE.
+- TDD: include unit tests and UI tests.
+- Performance: tuned for Core i3 + 4GB RAM.
+- Localization: Arabic default (RTL) and English.
+
+Deliverables:
+- Full Java project scaffold with Gradle (Kotlin DSL), src, tests, resources, migrations, seed data, and packaging scripts.
+- README with build/run/install instructions and demo credentials.
+- SQL migration template and seed CSVs.
+- Example receipt template and CSS styles for JavaFX.
+EOF
+
+cat > "$OUTDIR/README.txt" <<'EOF'
+Grocery Store Desktop POS — Package
+
+Files included:
+- Desktop_POS_Full_Spec.md            (detailed system specification)
+- Java_Developer_Prompt.md           (LLM prompts for generating project)
+- scaffold/build.gradle.kts          (Gradle Kotlin DSL build file - starter)
+- scaffold/settings.gradle.kts
+- migrations/V1__init.sql            (initial schema)
+- seeds/products_seed.csv
+- packaging/jpackage_example.sh
+- scaffold/src/main/java/com/example/pos/MainApp.java
+- scaffold/src/main/resources/i18n_ar.properties
+- scaffold/src/main/resources/i18n_en.properties
+- README.txt (this file)
+
+Next steps:
+1. Use Java_Developer_Prompt.md with your chosen LLM to generate full project code or ask me to scaffold more code here.
+2. Or run the included scaffold as a starting point: `cd scaffold && ./gradlew build` (Java 17+).
+EOF
+
+cat > "$OUTDIR/scaffold/build.gradle.kts" <<'EOF'
+plugins {
+    id("application")
+    id("org.openjfx.javafxplugin") version "0.0.13"
+}
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+dependencies {
+    implementation("org.xerial:sqlite-jdbc:3.40.0.0")
+    implementation("org.openjfx:javafx-controls:17.0.2")
+    implementation("org.openjfx:javafx-fxml:17.0.2")
+    implementation("org.mindrot:jbcrypt:0.4")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+    implementation("org.slf4j:slf4j-simple:2.0.7")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testImplementation("org.testfx:testfx-junit5:4.0.16-alpha")
+    testImplementation("org.mockito:mockito-core:5.3.1")
+}
+
+application {
+    mainClass.set("com.example.pos.MainApp")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+EOF
+
+cat > "$OUTDIR/scaffold/settings.gradle.kts" <<'EOF'
+rootProject.name = "grocery-desktop-pos"
+EOF
+
+cat > "$OUTDIR/migrations/V1__init.sql" <<'EOF'
+-- V1__init.sql
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  full_name TEXT,
+  role TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT
+);
+
+CREATE TABLE products (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  sku TEXT,
+  barcode TEXT,
+  name_ar TEXT NOT NULL,
+  name_en TEXT,
+  category TEXT,
+  unit TEXT,
+  purchase_price_last REAL DEFAULT 0,
+  purchase_price_avg REAL DEFAULT 0,
+  sell_price REAL DEFAULT 0,
+  qty REAL DEFAULT 0,
+  expiry_date TEXT,
+  expiry_warning_offset TEXT,
+  low_stock_threshold REAL DEFAULT 0,
+  description TEXT,
+  created_by INTEGER,
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT
+);
+
+-- other tables follow similarly...
+EOF
+
+cat > "$OUTDIR/seeds/products_seed.csv" <<'EOF'
+sku,barcode,name_ar,name_en,category,unit,purchase_price_last,sell_price,qty
+SKU001,100000000001,لبن,Milk,Dairy,pcs,10.0,15.0,50
+SKU002,100000000002,خبز,Bread,Bakery,pcs,2.0,3.5,100
+EOF
+
+cat > "$OUTDIR/packaging/jpackage_example.sh" <<'EOF'
+#!/usr/bin/env bash
+# Example jpackage script - adjust paths and variables
+APP_NAME="GroceryPOS"
+MAIN_CLASS="com.example.pos.MainApp"
+JAR_FILE="build/libs/grocery-desktop-pos.jar"
+INSTALL_DIR="./installer"
+
+jpackage \
+  --name "$APP_NAME" \
+  --input "build/libs" \
+  --main-jar "$(basename "$JAR_FILE")" \
+  --main-class "$MAIN_CLASS" \
+  --type dmg \
+  --dest "$INSTALL_DIR" \
+  --java-options "--enable-preview"
+echo "jpackage completed. Check $INSTALL_DIR"
+EOF
+
+cat > "$OUTDIR/scaffold/src/main/java/com/example/pos/MainApp.java" <<'EOF'
+package com.example.pos;
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
+
+public class MainApp extends Application {
+    @Override
+    public void start(Stage primaryStage) {
+        var label = new Label("Grocery POS - Desktop (JavaFX)");
+        var scene = new Scene(label, 800, 600);
+        primaryStage.setTitle("Grocery POS");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+EOF
+
+cat > "$OUTDIR/scaffold/src/main/resources/i18n_ar.properties" <<'EOF'
+app.title=نظام نقاط البيع
+login.username=اسم المستخدم
+login.password=كلمة المرور
+EOF
+
+cat > "$OUTDIR/scaffold/src/main/resources/i18n_en.properties" <<'EOF'
+app.title=Grocery POS
+login.username=Username
+login.password=Password
+EOF
+
+# Create zip
+zip -r "$ZIPNAME" "$OUTDIR" >/dev/null
+
+echo "Created $ZIPNAME containing files in $OUTDIR"
