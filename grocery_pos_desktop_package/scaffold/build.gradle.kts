@@ -1,6 +1,6 @@
 plugins {
     id("application")
-    id("org.openjfx.javafxplugin") version "0.0.13"
+    id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
 repositories {
@@ -8,8 +8,8 @@ repositories {
 }
 
 java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain {    
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
