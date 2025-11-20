@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.pos.controller.ProductsController">
+    <center>
+        <TableView fx:id="productsTable">
+            <columns>
+                <TableColumn fx:id="nameArColumn" text="الاسم"/>
+                <TableColumn fx:id="sellPriceColumn" text="السعر"/>
+                <TableColumn fx:id="qtyColumn" text="الكمية"/>
+            </columns>
+        </TableView>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER" spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Button text="إضافة" onAction="#handleAddProduct"/>
+            <Button text="تعديل" onAction="#handleEditProduct"/>
+            <Button text="حذف" onAction="#handleDeleteProduct"/>
+        </HBox>
+    </bottom>
+</BorderPane>
