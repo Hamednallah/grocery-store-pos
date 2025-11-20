@@ -1,17 +1,12 @@
 package com.example.pos.controller;
 
-<<<<<<< HEAD
-=======
 import com.example.pos.service.AuthService;
->>>>>>> fix/login-flow-and-db-init
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-<<<<<<< HEAD
-=======
+
 import java.util.ResourceBundle;
->>>>>>> fix/login-flow-and-db-init
 
 public class LoginController {
 
@@ -24,11 +19,6 @@ public class LoginController {
     @FXML
     private Label statusLabel;
 
-<<<<<<< HEAD
-    @FXML
-    protected void handleLoginButtonAction() {
-        // Will be implemented later
-=======
     private final AuthService authService;
     private final ResourceBundle resourceBundle;
 
@@ -49,6 +39,5 @@ public class LoginController {
             statusLabel.setText(resourceBundle.getString("login.failure"));
             statusLabel.setStyle("-fx-text-fill: red;");
         }
->>>>>>> fix/login-flow-and-db-init
     }
 }

@@ -1,35 +1,27 @@
 package com.example.pos;
 
-<<<<<<< HEAD
-=======
 import com.example.pos.controller.LoginController;
 import com.example.pos.dao.UserDAO;
 import com.example.pos.database.DatabaseManager;
 import com.example.pos.database.SchemaInitializer;
 import com.example.pos.service.AuthService;
->>>>>>> fix/login-flow-and-db-init
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-<<<<<<< HEAD
-=======
 import java.sql.Connection;
->>>>>>> fix/login-flow-and-db-init
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-<<<<<<< HEAD
         Locale.setDefault(new Locale("ar"));
         ResourceBundle bundle = ResourceBundle.getBundle("i18n", Locale.getDefault());
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/pos/view/LoginView.fxml"), bundle);
-=======
         // Initialize database
         Connection connection = DatabaseManager.getConnection();
         SchemaInitializer.initialize(connection);
@@ -37,16 +29,11 @@ public class MainApp extends Application {
         // Initialize backend services
         UserDAO userDAO = new UserDAO(connection);
         AuthService authService = new AuthService(userDAO);
-
-        // Setup i18n
         Locale.setDefault(new Locale("ar"));
-        ResourceBundle bundle = ResourceBundle.getBundle("i18n", Locale.getDefault());
 
         // Setup FXML Loader with a controller factory for dependency injection
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/pos/view/LoginView.fxml"), bundle);
         loader.setControllerFactory(param -> new LoginController(authService, bundle));
 
->>>>>>> fix/login-flow-and-db-init
         Parent root = loader.load();
 
         Scene scene = new Scene(root, 400, 300);

@@ -8,11 +8,7 @@ repositories {
 }
 
 java {
-<<<<<<< HEAD
-    toolchain {    
-=======
     toolchain {
->>>>>>> fix/login-flow-and-db-init
         languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
