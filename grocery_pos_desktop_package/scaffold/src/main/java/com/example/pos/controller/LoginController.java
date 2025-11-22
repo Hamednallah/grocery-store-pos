@@ -21,12 +21,10 @@ public class LoginController {
     @FXML
     private Label statusLabel;
 
-    private final MainApp mainApp;
     private final AuthService authService;
     private final ResourceBundle resourceBundle;
 
-    public LoginController(MainApp mainApp, AuthService authService, ResourceBundle resourceBundle) {
-        this.mainApp = mainApp;
+    public LoginController(AuthService authService, ResourceBundle resourceBundle) {
         this.authService = authService;
         this.resourceBundle = resourceBundle;
     }
@@ -37,13 +35,8 @@ public class LoginController {
         String password = passwordField.getText();
 
         if (authService.login(username, password)) {
-            try {
-                mainApp.showMainView();
-            } catch (IOException e) {
-                e.printStackTrace();
-                statusLabel.setText("Error loading main view.");
-                statusLabel.setStyle("-fx-text-fill: red;");
-            }
+            statusLabel.setText(resourceBundle.getString("login.success"));
+            statusLabel.setStyle("-fx-text-fill: green;");
         } else {
             statusLabel.setText(resourceBundle.getString("login.failure"));
             statusLabel.setStyle("-fx-text-fill: red;");

@@ -32,7 +32,6 @@ CREATE TABLE IF NOT EXISTS products (
   updated_at TEXT
 );
 
--- Insert default admin user (password: password)
 -- Insert default admin user (password: admin)
 INSERT OR IGNORE INTO users (username, password_hash, full_name, role)
 VALUES ('admin', '$2a$10$JWi7Oq541Qe/7AuSISwepOI8Y1Kjr1w8vlwU3B1X9fUHvZVQQoDcu', 'Admin User', 'ADMIN');
