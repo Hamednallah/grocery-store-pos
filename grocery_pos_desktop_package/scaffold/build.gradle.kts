@@ -20,6 +20,8 @@ dependencies {
     implementation("org.mindrot:jbcrypt:0.4")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
     implementation("org.slf4j:slf4j-simple:2.0.7")
+    implementation("io.github.mkpaz:atlantafx-base:2.0.1")
+    implementation("de.jensd:fontawesomefx-fontawesome:4.7.0-9.1.2")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
     testImplementation("org.testfx:testfx-junit5:4.0.16-alpha")

@@ -1,5 +1,6 @@
 package com.example.pos;
 
+import atlantafx.base.theme.PrimerLight;
 import com.example.pos.controller.LoginController;
 import com.example.pos.controller.MainController;
 import com.example.pos.dao.ProductDAO;
@@ -29,6 +30,9 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
 
+        // Apply AtlantaFX theme
+        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+
         // Initialize database
         this.connection = DatabaseManager.getConnection();
         SchemaInitializer.initialize(connection);
@@ -50,7 +54,6 @@ public class MainApp extends Application {
 
         Parent root = loader.load();
         Scene scene = new Scene(root, 400, 300);
-        scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
 
         primaryStage.setTitle(bundle.getString("app.title"));
         primaryStage.setScene(scene);
@@ -65,7 +68,6 @@ public class MainApp extends Application {
 
         Parent root = loader.load();
         Scene scene = new Scene(root, 800, 600);
-        scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         primaryStage.setTitle(bundle.getString("app.title"));
         primaryStage.setScene(scene);
     }
