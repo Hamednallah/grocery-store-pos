@@ -11,6 +11,27 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TEXT
 );
 
--- Insert default admin user (password: password)
-INSERT INTO users (username, password_hash, full_name, role)
-VALUES ('admin', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System Administrator', 'ADMIN');
+CREATE TABLE IF NOT EXISTS products (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  sku TEXT,
+  barcode TEXT,
+  name_ar TEXT NOT NULL,
+  name_en TEXT,
+  category TEXT,
+  unit TEXT,
+  purchase_price_last REAL DEFAULT 0,
+  purchase_price_avg REAL DEFAULT 0,
+  sell_price REAL DEFAULT 0,
+  qty REAL DEFAULT 0,
+  expiry_date TEXT,
+  expiry_warning_offset TEXT,
+  low_stock_threshold REAL DEFAULT 0,
+  description TEXT,
+  created_by INTEGER,
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT
+);
+
+-- Insert default admin user (password: admin)
+INSERT OR IGNORE INTO users (username, password_hash, full_name, role)
+VALUES ('admin', '$2a$10$JWi7Oq541Qe/7AuSISwepOI8Y1Kjr1w8vlwU3B1X9fUHvZVQQoDcu', 'Admin User', 'ADMIN');

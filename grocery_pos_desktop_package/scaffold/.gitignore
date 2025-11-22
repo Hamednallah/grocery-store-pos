@@ -1,6 +1,4 @@
 .gradle
 build
-<<<<<<< HEAD
-=======
 bin/
->>>>>>> fix/login-flow-and-db-init
+data/
