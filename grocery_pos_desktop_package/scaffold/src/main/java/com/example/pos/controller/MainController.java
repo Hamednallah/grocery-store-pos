@@ -9,12 +9,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +49,14 @@ public class MainController {
     }
 
     @FXML
+    private void initialize() {
+        // Store original button text
+        for (Node node : sideNav.getChildren()) {
+            if (node instanceof Button button && button.getText() != null && !button.getText().isEmpty()) {
+                buttonTextMap.put(button, button.getText());
+            }
+        }
+        showDashboardView();
     private void initialize() {
         // Store original button text
         for (Node node : sideNav.getChildren()) {
