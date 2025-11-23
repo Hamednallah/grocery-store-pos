@@ -6,32 +6,41 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.pos.controller.LoginController" styleClass="card" nodeOrientation="RIGHT_TO_LEFT">
-    <padding>
-        <Insets top="25" right="25" bottom="25" left="25"/>
-    </padding>
+<HBox alignment="CENTER" stylesheets="@../css/login.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.pos.controller.LoginController">
+    <children>
+        <!-- Left side with app info -->
+        <VBox alignment="CENTER" prefWidth="300" spacing="20" styleClass="info-panel">
+            <padding>
+                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+            </padding>
+            <children>
+                <FontAwesomeIconView glyphName="SHOPPING_BASKET" size="5em" styleClass="logo-icon"/>
+                <Text text="%app.title" styleClass="app-title"/>
+                <Label text="%app.version" styleClass="version-label"/>
+                <Label text="%app.developer" styleClass="dev-label"/>
+            </children>
+        </VBox>
 
-    <Text text="%app.title" styleClass="header"/>
-
-    <GridPane hgap="10" vgap="10">
-        <Label text="%login.username" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <TextField fx:id="usernameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-
-        <Label text="%login.password" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <PasswordField fx:id="passwordField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-    </GridPane>
-
-    <Button text="%login.button" onAction="#handleLoginButtonAction" styleClass="accent">
-        <graphic>
-            <FontAwesomeIconView glyphName="SIGN_IN"/>
-        </graphic>
-    </Button>
-
-    <Label fx:id="statusLabel"/>
-
-</VBox>
+        <!-- Right side with login form -->
+        <VBox alignment="CENTER" prefWidth="300" spacing="20" styleClass="form-panel">
+            <padding>
+                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+            </padding>
+            <children>
+                <Text text="%login.welcome" styleClass="title-4"/>
+                <TextField fx:id="usernameField" promptText="%login.username" />
+                <PasswordField fx:id="passwordField" promptText="%login.password" />
+                <Button onAction="#handleLoginButtonAction" styleClass="accent" text="%login.button">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="SIGN_IN" />
+                    </graphic>
+                </Button>
+                <Label fx:id="statusLabel" styleClass="status-label"/>
+            </children>
+        </VBox>
+    </children>
+</HBox>
