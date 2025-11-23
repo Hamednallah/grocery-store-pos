@@ -64,7 +64,9 @@ public class MainApp extends Application {
         ProductDAO productDAO = new ProductDAO(connection);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/pos/view/MainView.fxml"), bundle);
-        loader.setControllerFactory(param -> new MainController(productDAO));
+        loader.setControllerFactory(param -> new MainController() {{
+            setProductDAO(productDAO);
+        }});
 
         Parent root = loader.load();
         Scene scene = new Scene(root, 800, 600);
