@@ -57,14 +57,6 @@ public class MainController {
             }
         }
         showDashboardView();
-    private void initialize() {
-        // Store original button text
-        for (Node node : sideNav.getChildren()) {
-            if (node instanceof Button button && button.getText() != null && !button.getText().isEmpty()) {
-                buttonTextMap.put(button, button.getText());
-            }
-        }
-        showDashboardView();
     }
 
     @FXML
