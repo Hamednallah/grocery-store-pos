@@ -1,15 +1,22 @@
 package com.example.pos.controller;
 
 import com.example.pos.dao.ProductDAO;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainController {
 
@@ -22,14 +29,26 @@ public class MainController {
     @FXML
     private StackPane contentPane;
 
-    private final ProductDAO productDAO;
+    private ProductDAO productDAO;
+    private boolean navCollapsed = false;
+    private final Map<Button, String> buttonTextMap = new HashMap<>();
 
-    public MainController(ProductDAO productDAO) {
+    public MainController() {
+        // No-argument constructor required by FXML
+    }
+
+    public void setProductDAO(ProductDAO productDAO) {
         this.productDAO = productDAO;
     }
 
     @FXML
     private void initialize() {
+        // Store original button text
+        for (Node node : sideNav.getChildren()) {
+            if (node instanceof Button button && button.getText() != null && !button.getText().isEmpty()) {
+                buttonTextMap.put(button, button.getText());
+            }
+        }
         showDashboardView();
     }
 
@@ -40,8 +59,33 @@ public class MainController {
 
     @FXML
     private void toggleNav() {
-        sideNav.setVisible(!sideNav.isVisible());
-        sideNav.setManaged(!sideNav.isManaged());
+        navCollapsed = !navCollapsed;
+
+        double targetWidth = navCollapsed ? 80 : 200;
+        Timeline timeline = new Timeline();
+        KeyValue keyValue = new KeyValue(sideNav.prefWidthProperty(), targetWidth);
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(300), keyValue);
+        timeline.getKeyFrames().add(keyFrame);
+
+        if (navCollapsed) {
+            for (Node node : sideNav.getChildren()) {
+                if (node instanceof Button button && buttonTextMap.containsKey(button)) {
+                    button.setText("");
+                }
+            }
+        }
+
+        timeline.setOnFinished(event -> {
+            if (!navCollapsed) {
+                for (Node node : sideNav.getChildren()) {
+                    if (node instanceof Button button && buttonTextMap.containsKey(button)) {
+                        button.setText(buttonTextMap.get(button));
+                    }
+                }
+            }
+        });
+
+        timeline.play();
     }
 
     @FXML
@@ -82,6 +126,11 @@ public class MainController {
     @FXML
     private void showSettingsView() {
         loadView("/com/example/pos/view/SettingsView.fxml");
+    }
+
+    @FXML
+    private void handleExit() {
+        Platform.exit();
     }
 
     private void loadView(String fxmlPath) {

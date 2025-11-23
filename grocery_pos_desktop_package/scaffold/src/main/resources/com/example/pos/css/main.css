@@ -14,8 +14,9 @@
 .side-nav .button {
     -fx-background-color: transparent;
     -fx-text-fill: -color-fg-default;
-    -fx-alignment: CENTER_LEFT;
+    -fx-alignment: CENTER;
     -fx-padding: 10 20;
+    -fx-transition: -fx-background-color 0.3s;
 }
 
 .side-nav .button:hover {

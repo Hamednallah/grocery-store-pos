@@ -65,14 +65,15 @@
                         <FontAwesomeIconView glyphName="COG" />
                     </graphic>
                 </Button>
+                <Button contentDisplay="LEFT" onAction="#handleExit" text="Exit">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="SIGN_OUT" />
+                    </graphic>
+                </Button>
             </children>
         </VBox>
     </left>
     <center>
-        <StackPane fx:id="contentPane" styleClass="content-pane">
-            <children>
-                <Label text="Welcome to the Dashboard!" />
-            </children>
-        </StackPane>
+        <StackPane fx:id="contentPane" styleClass="content-pane" />
     </center>
 </BorderPane>
