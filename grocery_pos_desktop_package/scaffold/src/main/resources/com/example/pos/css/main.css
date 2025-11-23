@@ -1,0 +1,28 @@
+.side-nav {
+    -fx-background-color: -color-bg-subtle;
+}
+
+.content-pane {
+    -fx-background-color: -color-bg-default;
+}
+
+.toggle-nav-button {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+.side-nav .button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-fg-default;
+    -fx-alignment: CENTER;
+    -fx-padding: 10 20;
+    -fx-transition: -fx-background-color 0.3s;
+}
+
+.side-nav .button:hover {
+    -fx-background-color: -color-accent-emphasis;
+}
+
+.side-nav .button .ikonli-font-icon {
+    -fx-icon-color: -color-fg-default;
+}
