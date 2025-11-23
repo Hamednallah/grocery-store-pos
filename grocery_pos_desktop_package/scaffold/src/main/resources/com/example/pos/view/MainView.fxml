@@ -10,7 +10,7 @@
 
 <BorderPane fx:id="mainPane" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.pos.controller.MainController">
     <left>
-        <VBox fx:id="sideNav" alignment="TOP_CENTER" prefWidth="200" spacing="10" styleClass="side-nav">
+        <VBox fx:id="sideNav" alignment="TOP_CENTER" spacing="10" styleClass="side-nav">
             <padding>
                 <Insets top="10" />
             </padding>
@@ -20,52 +20,52 @@
                         <FontAwesomeIconView glyphName="BARS" size="20" />
                     </graphic>
                 </Button>
-                <Button contentDisplay="LEFT" onAction="#showDashboardView" text="Dashboard">
+                <Button contentDisplay="LEFT" onAction="#showDashboardView" text="%nav.dashboard">
                     <graphic>
                         <FontAwesomeIconView glyphName="TACHOMETER" />
                     </graphic>
                 </Button>
-                <Button contentDisplay="LEFT" onAction="#showSalesView" text="Sales">
+                <Button contentDisplay="LEFT" onAction="#showSalesView" text="%nav.sales">
                     <graphic>
                         <FontAwesomeIconView glyphName="SHOPPING_CART" />
                     </graphic>
                 </Button>
-                <Button contentDisplay="LEFT" onAction="#showProductsView" text="Products">
+                <Button contentDisplay="LEFT" onAction="#showProductsView" text="%nav.products">
                     <graphic>
                         <FontAwesomeIconView glyphName="CUBE" />
                     </graphic>
                 </Button>
-                <Button contentDisplay="LEFT" onAction="#showInventoryView" text="Inventory">
+                <Button contentDisplay="LEFT" onAction="#showInventoryView" text="%nav.inventory">
                     <graphic>
                         <FontAwesomeIconView glyphName="ARCHIVE" />
                     </graphic>
                 </Button>
-                <Button contentDisplay="LEFT" onAction="#showPurchaseOrdersView" text="Purchase Orders">
+                <Button contentDisplay="LEFT" onAction="#showPurchaseOrdersView" text="%nav.purchaseOrders">
                     <graphic>
                         <FontAwesomeIconView glyphName="TRUCK" />
                     </graphic>
                 </Button>
-                <Button contentDisplay="LEFT" onAction="#showExpensesView" text="Expenses">
+                <Button contentDisplay="LEFT" onAction="#showExpensesView" text="%nav.expenses">
                     <graphic>
                         <FontAwesomeIconView glyphName="MONEY" />
                     </graphic>
                 </Button>
-                <Button contentDisplay="LEFT" onAction="#showCustomersView" text="Customers">
+                <Button contentDisplay="LEFT" onAction="#showCustomersView" text="%nav.customers">
                     <graphic>
                         <FontAwesomeIconView glyphName="USERS" />
                     </graphic>
                 </Button>
-                <Button contentDisplay="LEFT" onAction="#showReportsView" text="Reports">
+                <Button contentDisplay="LEFT" onAction="#showReportsView" text="%nav.reports">
                     <graphic>
                         <FontAwesomeIconView glyphName="BAR_CHART" />
                     </graphic>
                 </Button>
-                <Button contentDisplay="LEFT" onAction="#showSettingsView" text="Settings">
+                <Button contentDisplay="LEFT" onAction="#showSettingsView" text="%nav.settings">
                     <graphic>
                         <FontAwesomeIconView glyphName="COG" />
                     </graphic>
                 </Button>
-                <Button contentDisplay="LEFT" onAction="#handleExit" text="Exit">
+                <Button contentDisplay="LEFT" onAction="#handleExit" text="%nav.exit">
                     <graphic>
                         <FontAwesomeIconView glyphName="SIGN_OUT" />
                     </graphic>

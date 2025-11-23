@@ -1,4 +1,7 @@
-.gradle
-build
+.gradle/
+build/
 bin/
 data/
+*.class
+*.log
+.db

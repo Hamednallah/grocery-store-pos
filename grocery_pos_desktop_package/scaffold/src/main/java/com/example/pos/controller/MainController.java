@@ -9,19 +9,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.util.Duration;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +28,10 @@ public class MainController {
 
     @FXML
     private StackPane contentPane;
+
+    private static final double NAV_EXPANDED_WIDTH = 200;
+    private static final double NAV_COLLAPSED_WIDTH = 80;
+    private static final double ANIMATION_DURATION = 300;
 
     private ProductDAO productDAO;
     private boolean navCollapsed = false;
@@ -61,17 +58,17 @@ public class MainController {
 
     @FXML
     private void showProductsView() {
-        loadView("/com/example/pos/view/ProductsView.fxml", param -> new ProductsController(productDAO));
+        loadView("/com/example/pos/view/ProductsView.fxml", (ProductsController controller) -> controller.setProductDAO(productDAO));
     }
 
     @FXML
     private void toggleNav() {
         navCollapsed = !navCollapsed;
 
-        double targetWidth = navCollapsed ? 80 : 200;
+        double targetWidth = navCollapsed ? NAV_COLLAPSED_WIDTH : NAV_EXPANDED_WIDTH;
         Timeline timeline = new Timeline();
         KeyValue keyValue = new KeyValue(sideNav.prefWidthProperty(), targetWidth);
-        KeyFrame keyFrame = new KeyFrame(Duration.millis(300), keyValue);
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(ANIMATION_DURATION), keyValue);
         timeline.getKeyFrames().add(keyFrame);
 
         if (navCollapsed) {
@@ -141,16 +138,15 @@ public class MainController {
     }
 
     private void loadView(String fxmlPath) {
-        loadView(fxmlPath, null);
+        loadView(fxmlPath, (Object controller) -> {});
     }
 
-    private void loadView(String fxmlPath, javafx.util.Callback<Class<?>, Object> controllerFactory) {
+    private <T> void loadView(String fxmlPath, java.util.function.Consumer<T> controllerInitializer) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            if (controllerFactory != null) {
-                loader.setControllerFactory(controllerFactory);
-            }
             Node view = loader.load();
+            T controller = loader.getController();
+            controllerInitializer.accept(controller);
             contentPane.getChildren().setAll(view);
         } catch (IOException e) {
             e.printStackTrace();

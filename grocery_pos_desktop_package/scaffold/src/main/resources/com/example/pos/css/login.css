@@ -1,0 +1,35 @@
+.info-panel {
+    -fx-background-color: -color-bg-subtle;
+    -fx-alignment: center;
+}
+
+.form-panel {
+    -fx-background-color: -color-bg-default;
+    -fx-alignment: center;
+}
+
+.logo-icon {
+    -fx-fill: -color-accent-emphasis;
+}
+
+.app-title {
+    -fx-font-size: 2em;
+    -fx-fill: -color-fg-default;
+}
+
+.version-label, .dev-label {
+    -fx-font-size: 0.8em;
+    -fx-text-fill: -color-fg-muted;
+}
+
+.form-panel .text-field {
+    -fx-pref-width: 200px;
+}
+
+.form-panel .button {
+    -fx-pref-width: 200px;
+}
+
+.status-label {
+    -fx-text-fill: -color-danger-fg;
+}

@@ -1,77 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
 
-<BorderPane stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.pos.controller.ProductsController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
-    <center>
-        <TableView fx:id="productsTable" BorderPane.alignment="CENTER">
-            <columns>
-                <TableColumn fx:id="skuColumn" prefWidth="100.0" text="SKU" />
-                <TableColumn fx:id="barcodeColumn" prefWidth="120.0" text="Barcode" />
-                <TableColumn fx:id="nameArColumn" prefWidth="200.0" text="Name (Arabic)" />
-                <TableColumn fx:id="sellPriceColumn" prefWidth="100.0" text="Sell Price" />
-                <TableColumn fx:id="qtyColumn" prefWidth="75.0" text="Quantity" />
-                <TableColumn fx:id="expiryDateColumn" prefWidth="120.0" text="Expiry Date" />
-            </columns>
-        </TableView>
-    </center>
-    <right>
-        <VBox alignment="TOP_CENTER" prefWidth="300.0" spacing="20.0" BorderPane.alignment="CENTER">
-            <BorderPane.margin>
-                <Insets left="20.0" />
-            </BorderPane.margin>
-            <children>
-                <Label styleClass="title-4" text="Product Details" />
-                <GridPane hgap="10.0" vgap="10.0">
-                    <children>
-                        <Label text="SKU" GridPane.rowIndex="0" />
-                        <TextField fx:id="skuField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                        <Label text="Barcode" GridPane.rowIndex="1" />
-                        <TextField fx:id="barcodeField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="Name (Arabic)" GridPane.rowIndex="2" />
-                        <TextField fx:id="nameArField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Label text="Sell Price" GridPane.rowIndex="3" />
-                        <TextField fx:id="sellPriceField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                        <Label text="Quantity" GridPane.rowIndex="4" />
-                        <TextField fx:id="qtyField" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                        <Label text="Expiry Date" GridPane.rowIndex="5" />
-                        <DatePicker fx:id="expiryDateField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                    </children>
-                </GridPane>
-                <HBox alignment="CENTER" spacing="10.0">
-                    <children>
-                        <Button onAction="#handleNewProduct" styleClass="accent" text="New">
-                            <graphic>
-                                <FontAwesomeIconView glyphName="PLUS" />
-                            </graphic>
-                        </Button>
-                        <Button onAction="#handleSaveProduct" text="Save">
-                            <graphic>
-                                <FontAwesomeIconView glyphName="SAVE" />
-                            </graphic>
-                        </Button>
-                        <Button onAction="#handleDeleteProduct" styleClass="danger" text="Delete">
-                            <graphic>
-                                <FontAwesomeIconView glyphName="TRASH" />
-                            </graphic>
-                        </Button>
-                    </children>
-                </HBox>
-            </children>
-        </VBox>
-    </right>
-</BorderPane>
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER">
+    <children>
+        <Label text="Products View"/>
+    </children>
+</StackPane>
