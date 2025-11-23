@@ -65,8 +65,9 @@ public class MainApp extends Application {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/pos/view/MainView.fxml"), bundle);
         loader.setControllerFactory(param -> new MainController() {{
-                    setProductDAO(productDAO);
-                }});
+            setProductDAO(productDAO);
+        }});
+
         Parent root = loader.load();
         Scene scene = new Scene(root, 800, 600);
         primaryStage.setTitle(bundle.getString("app.title"));
