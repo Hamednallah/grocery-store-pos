@@ -1,25 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="mainPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.pos.controller.MainController">
-    <top>
-        <MenuBar>
-            <menus>
-                <Menu text="File">
-                    <items>
-                        <MenuItem text="Close" onAction="#handleClose"/>
-                    </items>
-                </Menu>
-                <Menu text="View">
-                    <items>
-                        <MenuItem text="Products" onAction="#showProductsView"/>
-                    </items>
-                </Menu>
-            </menus>
-        </MenuBar>
-    </top>
+<BorderPane fx:id="mainPane" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.pos.controller.MainController">
+    <left>
+        <VBox fx:id="sideNav" alignment="TOP_CENTER" prefWidth="200" spacing="10" styleClass="side-nav">
+            <padding>
+                <Insets top="10" />
+            </padding>
+            <children>
+                <Button fx:id="toggleNavButton" onAction="#toggleNav" styleClass="toggle-nav-button">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="BARS" size="20" />
+                    </graphic>
+                </Button>
+                <Button contentDisplay="LEFT" onAction="#showDashboardView" text="Dashboard">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="TACHOMETER" />
+                    </graphic>
+                </Button>
+                <Button contentDisplay="LEFT" onAction="#showSalesView" text="Sales">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="SHOPPING_CART" />
+                    </graphic>
+                </Button>
+                <Button contentDisplay="LEFT" onAction="#showProductsView" text="Products">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="CUBE" />
+                    </graphic>
+                </Button>
+                <Button contentDisplay="LEFT" onAction="#showInventoryView" text="Inventory">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="ARCHIVE" />
+                    </graphic>
+                </Button>
+                <Button contentDisplay="LEFT" onAction="#showPurchaseOrdersView" text="Purchase Orders">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="TRUCK" />
+                    </graphic>
+                </Button>
+                <Button contentDisplay="LEFT" onAction="#showExpensesView" text="Expenses">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="MONEY" />
+                    </graphic>
+                </Button>
+                <Button contentDisplay="LEFT" onAction="#showCustomersView" text="Customers">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="USERS" />
+                    </graphic>
+                </Button>
+                <Button contentDisplay="LEFT" onAction="#showReportsView" text="Reports">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="BAR_CHART" />
+                    </graphic>
+                </Button>
+                <Button contentDisplay="LEFT" onAction="#showSettingsView" text="Settings">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="COG" />
+                    </graphic>
+                </Button>
+            </children>
+        </VBox>
+    </left>
+    <center>
+        <StackPane fx:id="contentPane" styleClass="content-pane">
+            <children>
+                <Label text="Welcome to the Dashboard!" />
+            </children>
+        </StackPane>
+    </center>
 </BorderPane>
