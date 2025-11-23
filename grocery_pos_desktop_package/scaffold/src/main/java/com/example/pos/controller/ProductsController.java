@@ -2,6 +2,8 @@ package com.example.pos.controller;
 
 import com.example.pos.dao.ProductDAO;
 
+import java.time.LocalDate;
+
 public class ProductsController {
 
     private ProductDAO productDAO;
